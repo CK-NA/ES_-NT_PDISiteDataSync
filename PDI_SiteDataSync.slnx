@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PDI_SiteDataSync.Tests/PDI_SiteDataSync.Tests.csproj" />
+  <Project Path="PDI_SiteDataSync/PDI_SiteDataSync.csproj" />
+</Solution>
