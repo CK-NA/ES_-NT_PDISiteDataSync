@@ -1,7 +1,7 @@
 ﻿using PDI_SiteDataSync;
 
 // Set the license context for EPPlus (required for version 5.0+)
-ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+ExcelPackage.License.SetNonCommercialOrganization( "CircleK Stores Inc.");
 
 // Initialize program and configuration
 ProgramInitializer? initializer = null;

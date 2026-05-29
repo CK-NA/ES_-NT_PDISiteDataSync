@@ -1,3 +1,5 @@
+using NLog.Extensions.Logging;
+
 namespace PDI_SiteDataSync.Utility;
 
 /// <summary>

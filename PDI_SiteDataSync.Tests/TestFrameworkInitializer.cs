@@ -1,3 +1,8 @@
+using Xunit.Abstractions;
+using Xunit.Sdk;
+using NLog.Config;
+using NLog.Targets;
+
 [assembly: Xunit.TestFramework("PDI_SiteDataSync.Tests.TestFrameworkInitializer", "PDI_SiteDataSync.Tests")]
 
 namespace PDI_SiteDataSync.Tests;
@@ -8,8 +13,7 @@ namespace PDI_SiteDataSync.Tests;
 /// </summary>
 public class TestFrameworkInitializer : XunitTestFramework
 {
-	public TestFrameworkInitializer(IMessageSink messageSink)
-		: base(messageSink)
+	public TestFrameworkInitializer(IMessageSink messageSink) : base(messageSink)
 	{
 		// Force NLog configuration to memory-only targets before any test discovery
 		var config = new LoggingConfiguration();

@@ -47,6 +47,28 @@ public class ArchiveManagerTests : IDisposable
 	}
 
 	[Fact]
+	public void ArchiveDataFile_WhenFileDoesNotExist_ReturnsNull()
+	{
+		// Arrange
+		var nonExistentFile = Path.Combine(_testLogsFolder, "does_not_exist.xlsx");
+
+		var config = new ArchiveConfiguration
+		{
+			ArchiveFolder = _testArchiveFolder,
+			LogsFolder = _testLogsFolder
+		};
+		var archiveManager = new ArchiveManager(_logger, _mockLoggerFactory.Object, config);
+		var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+		// Act
+		var result = archiveManager.ArchiveDataFile(nonExistentFile, timestamp);
+
+		// Assert
+		result.Should().BeNull();
+		Directory.GetFiles(_testArchiveFolder, "Data_*.zip").Should().BeEmpty("no archive should be created");
+	}
+
+	[Fact]
 	public void ArchiveLogFiles_WhenNoLogsExist_ReturnsNull()
 	{
 		// Arrange

@@ -18,28 +18,28 @@ public class ArchiveManager : IArchiveManager
 	}
 
 	/// <summary>
-	/// Archives the processed Excel file to a timestamped zip file and deletes the original.
+	/// Archives the processed data file to a timestamped zip file and deletes the original.
 	/// </summary>
-	/// <param name="excelFilePath">Full path to the Excel file to archive</param>
+	/// <param name="filePath">Full path to the file to archive</param>
 	/// <param name="timestamp">Timestamp string for the archive file name</param>
 	/// <returns>Path to the created archive file</returns>
-	public string ArchiveDataFile(string excelFilePath, string timestamp)
+	public string? ArchiveDataFile(string filePath, string timestamp)
 	{
 		try
 		{
-			_logger.Info("Archiving data file: {ExcelFile}", excelFilePath);
+			_logger.Info("Archiving data file: {FilePath}", filePath);
 
-			// Verify file exists before attempting to archive
-			if (!File.Exists(excelFilePath))
+			// If file doesn't exist, log and return (valid scenario)
+			if (!File.Exists(filePath))
 			{
-				_logger.Error("Cannot archive data file - file does not exist: {ExcelFile}", excelFilePath);
-				throw new FileNotFoundException($"Excel file not found: {excelFilePath}");
+				_logger.Info("No data file found to archive: {FilePath}", filePath);
+				return null;
 			}
 
 			string dataZipFileName = $"Data_{timestamp}.zip";
 			string dataZipPath = Path.Combine(_configuration.ArchiveFolder, dataZipFileName);
 
-			// Retry logic to handle potential file locks from EPPlus
+			// Retry logic to handle potential file locks
 			int retryCount = 0;
 			int maxRetries = 3;
 			while (retryCount < maxRetries)
@@ -48,9 +48,9 @@ public class ArchiveManager : IArchiveManager
 				{
 					using (var dataZip = ZipFile.Open(dataZipPath, ZipArchiveMode.Create))
 					{
-						string fileName = Path.GetFileName(excelFilePath);
-						dataZip.CreateEntryFromFile(excelFilePath, fileName, System.IO.Compression.CompressionLevel.Optimal);
-						_logger.Debug("Added Excel file to data archive: {FileName}", fileName);
+						string fileName = Path.GetFileName(filePath);
+						dataZip.CreateEntryFromFile(filePath, fileName, System.IO.Compression.CompressionLevel.Optimal);
+						_logger.Debug("Added file to data archive: {FileName}", fileName);
 					}
 					break; // Success, exit retry loop
 				}
@@ -62,16 +62,16 @@ public class ArchiveManager : IArchiveManager
 				}
 			}
 
-			// Delete the original Excel file after archiving
-			File.Delete(excelFilePath);
+			// Delete the original file after archiving
+			File.Delete(filePath);
 			_logger.Info("Data archive created: {DataArchive}", dataZipPath);
-			_logger.Info("Original data file deleted: {ExcelFile}", excelFilePath);
+			_logger.Info("Original data file deleted: {FilePath}", filePath);
 
 			return dataZipPath;
 		}
 		catch (Exception ex)
 		{
-			_logger.Error(ex, "Failed to archive data file: {ExcelFile}", excelFilePath);
+			_logger.Error(ex, "Failed to archive data file: {FilePath}", filePath);
 			throw;
 		}
 	}
@@ -119,17 +119,24 @@ public class ArchiveManager : IArchiveManager
 	/// <summary>
 	/// Archives both data and log files with the same timestamp.
 	/// </summary>
-	/// <param name="excelFilePath">Full path to the Excel file to archive</param>
-	/// <returns>Tuple containing paths to the data and log archives (log archive may be null)</returns>
-	public (string DataArchive, string? LogArchive) ArchiveAll(string excelFilePath)
+	/// <param name="filePath">Full path to the file to archive</param>
+	/// <returns>Tuple containing paths to the data and log archives (both may be null)</returns>
+	public (string? DataArchive, string? LogArchive) ArchiveAll(string filePath)
 	{
 		_logger.Info("Starting archive process for data and logs");
-		Console.WriteLine($"  Archiving data file: {Path.GetFileName(excelFilePath)}");
+		Console.WriteLine($"  Archiving data file: {Path.GetFileName(filePath)}");
 		string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-		string dataArchive = ArchiveDataFile(excelFilePath, timestamp);
-		Console.WriteLine($"  ✓ Data archive created: {Path.GetFileName(dataArchive)}");
-		_logger.Info("Data archival completed successfully");
+		string? dataArchive = ArchiveDataFile(filePath, timestamp);
+		if (dataArchive != null)
+		{
+			Console.WriteLine($"  ✓ Data archive created: {Path.GetFileName(dataArchive)}");
+			_logger.Info("Data archival completed successfully");
+		}
+		else
+		{
+			Console.WriteLine($"  (No data file to archive)");
+		}
 
 		Console.WriteLine($"  Archiving log files...");
 		string? logArchive = ArchiveLogFiles(timestamp);
