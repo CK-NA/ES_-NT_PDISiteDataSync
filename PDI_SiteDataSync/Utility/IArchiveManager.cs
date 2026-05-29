@@ -5,8 +5,8 @@ namespace PDI_SiteDataSync.Utility;
 /// </summary>
 public interface IArchiveManager
 {
-    string ArchiveDataFile(string excelFilePath, string timestamp);
-    string? ArchiveLogFiles(string timestamp);
-    (string DataArchive, string? LogArchive) ArchiveAll(string excelFilePath);
-    void ArchiveLogsOnly();
+	string ArchiveDataFile(string excelFilePath, string timestamp);
+	string? ArchiveLogFiles(string timestamp);
+	(string DataArchive, string? LogArchive) ArchiveAll(string excelFilePath);
+	void ArchiveLogsOnly();
 }

@@ -5,5 +5,5 @@ namespace PDI_SiteDataSync.Utility;
 /// </summary>
 public interface IExcelDataReader
 {
-    (string ExcelFilePath, List<string> Values)? ReadDataFromExcel();
+	(string ExcelFilePath, List<string> Values)? ReadDataFromExcel();
 }

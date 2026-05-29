@@ -5,6 +5,6 @@ namespace PDI_SiteDataSync.Utility;
 /// </summary>
 public interface IFileSystemService
 {
-    bool DirectoryExists(string path);
-    void CreateDirectory(string path);
+	bool DirectoryExists(string path);
+	void CreateDirectory(string path);
 }

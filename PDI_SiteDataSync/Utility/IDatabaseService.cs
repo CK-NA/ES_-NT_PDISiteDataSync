@@ -5,7 +5,7 @@ namespace PDI_SiteDataSync.Utility;
 /// </summary>
 public interface IDatabaseService
 {
-    Task<int> AddHolidaySitesAndOrganizationsAsync(string storedProcedureName, string commaDelimitedSiteNumbers);
-    Task<int> AddSitesToSiteXRefAsync(string storedProcedureName, string commaDelimitedSiteNumbers);
-    Task<bool> TestConnectionAsync();
+	Task<List<int>> AddHolidaySitesAndOrganizationsAsync(string storedProcedureName, string commaDelimitedSiteNumbers);
+	Task<int> AddSitesToSiteXRefAsync(string storedProcedureName, string commaDelimitedSiteNumbers);
+	Task<bool> TestConnectionAsync();
 }

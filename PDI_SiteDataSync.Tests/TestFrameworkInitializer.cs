@@ -1,9 +1,3 @@
-using NLog;
-using NLog.Config;
-using NLog.Targets;
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
 [assembly: Xunit.TestFramework("PDI_SiteDataSync.Tests.TestFrameworkInitializer", "PDI_SiteDataSync.Tests")]
 
 namespace PDI_SiteDataSync.Tests;
@@ -14,23 +8,23 @@ namespace PDI_SiteDataSync.Tests;
 /// </summary>
 public class TestFrameworkInitializer : XunitTestFramework
 {
-    public TestFrameworkInitializer(IMessageSink messageSink)
-        : base(messageSink)
-    {
-        // Force NLog configuration to memory-only targets before any test discovery
-        var config = new LoggingConfiguration();
+	public TestFrameworkInitializer(IMessageSink messageSink)
+		: base(messageSink)
+	{
+		// Force NLog configuration to memory-only targets before any test discovery
+		var config = new LoggingConfiguration();
 
-        var memoryTarget = new MemoryTarget("memory")
-        {
-            Layout = "${longdate} ${level:uppercase=true} ${message} ${exception:format=tostring}"
-        };
+		var memoryTarget = new MemoryTarget("memory")
+		{
+			Layout = "${longdate} ${level:uppercase=true} ${message} ${exception:format=tostring}"
+		};
 
-        config.AddTarget(memoryTarget);
-        config.AddRule(LogLevel.Trace, LogLevel.Fatal, memoryTarget);
+		config.AddTarget(memoryTarget);
+		config.AddRule(LogLevel.Trace, LogLevel.Fatal, memoryTarget);
 
-        // Set this as the global NLog configuration
-        LogManager.Configuration = config;
+		// Set this as the global NLog configuration
+		LogManager.Configuration = config;
 
-        messageSink.OnMessage(new DiagnosticMessage("NLog initialized with memory-only target for tests"));
-    }
+		messageSink.OnMessage(new DiagnosticMessage("NLog initialized with memory-only target for tests"));
+	}
 }

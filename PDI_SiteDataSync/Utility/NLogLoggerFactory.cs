@@ -1,5 +1,3 @@
-using NLog;
-
 namespace PDI_SiteDataSync.Utility;
 
 /// <summary>
@@ -7,23 +5,35 @@ namespace PDI_SiteDataSync.Utility;
 /// </summary>
 public class NLogLoggerFactory : ILoggerFactory
 {
-    public void ConfigureLogDirectory(string logDirectory)
-    {
-        LogManager.Configuration.Variables["logDirectory"] = logDirectory;
-    }
+	public NLogLoggerFactory()
+	{
+		// Load configuration from appsettings.json
+		var config = new ConfigurationBuilder()
+			.SetBasePath(Directory.GetCurrentDirectory())
+			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+			.Build();
 
-    public Logger CreateLogger()
-    {
-        return LogManager.GetCurrentClassLogger();
-    }
+		LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+	}
 
-    public void FlushLogs()
-    {
-        LogManager.Flush();
-    }
+	public void ConfigureLogDirectory(string logDirectory)
+	{
+		LogManager.Configuration.Variables["logDirectory"] = logDirectory;
+		LogManager.ReconfigExistingLoggers();
+	}
 
-    public void ShutdownLogs()
-    {
-        LogManager.Shutdown();
-    }
+	public Logger CreateLogger()
+	{
+		return LogManager.GetCurrentClassLogger();
+	}
+
+	public void FlushLogs()
+	{
+		LogManager.Flush();
+	}
+
+	public void ShutdownLogs()
+	{
+		LogManager.Shutdown();
+	}
 }

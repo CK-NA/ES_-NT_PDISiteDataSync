@@ -1,101 +1,129 @@
-using Microsoft.Extensions.Configuration;
-using NLog;
+using PDI_SiteDataSync.Configuration;
 using PDI_SiteDataSync.Utility;
 
 namespace PDI_SiteDataSync;
 
 public class ProgramInitializer
 {
-    private readonly IFileSystemService _fileSystemService;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly string _configBasePath;
+	private readonly IFileSystemService _fileSystemService;
+	private readonly ILoggerFactory _loggerFactory;
+	private readonly string _configBasePath;
 
-    public string InputFolder { get; private set; } = string.Empty;
-    public string LogsFolder { get; private set; } = string.Empty;
-    public string ArchiveFolder { get; private set; } = string.Empty;
-    public string WorksheetName { get; private set; } = string.Empty;
-    public string ColumnName { get; private set; } = string.Empty;
-    public string CK_ReportingConnectionString { get; private set; } = string.Empty;
-    public string CommonConnectionString { get; private set; } = string.Empty;
-    public string AddHolidaySitesAndOrganizationsProc { get; private set; } = string.Empty;
-    public string AddSitesToSiteXRefProc { get; private set; } = string.Empty;
-    public Logger Logger { get; private set; } = null!;
+	public string InputFolder { get; private set; } = string.Empty;
+	public string LogsFolder { get; private set; } = string.Empty;
+	public string ArchiveFolder { get; private set; } = string.Empty;
+	public string WorksheetName { get; private set; } = string.Empty;
+	public string ColumnName { get; private set; } = string.Empty;
+	public string CK_ReportingConnectionString { get; private set; } = string.Empty;
+	public string CommonConnectionString { get; private set; } = string.Empty;
+	public string AddHolidaySitesAndOrganizationsProc { get; private set; } = string.Empty;
+	public string AddSitesToSiteXRefProc { get; private set; } = string.Empty;
+	public Logger Logger { get; private set; } = null!;
 
-    public ProgramInitializer() 
-        : this(new FileSystemService(), new NLogLoggerFactory(), Directory.GetCurrentDirectory())
-    {
-    }
+	// Configuration objects
+	public ExcelReaderConfiguration ExcelReaderConfig { get; private set; } = null!;
+	public ArchiveConfiguration ArchiveConfig { get; private set; } = null!;
+	public ApplicationConfiguration ApplicationConfig { get; private set; } = null!;
 
-    public ProgramInitializer(IFileSystemService fileSystemService, ILoggerFactory loggerFactory, string configBasePath)
-    {
-        _fileSystemService = fileSystemService;
-        _loggerFactory = loggerFactory;
-        _configBasePath = configBasePath;
-    }
+	public ProgramInitializer()
+		: this(new FileSystemService(), new NLogLoggerFactory(), Directory.GetCurrentDirectory())
+	{
+	}
 
-    public void Initialize()
-    {
-        // Load configuration from appsettings.json
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(_configBasePath)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();
+	public ProgramInitializer(IFileSystemService fileSystemService, ILoggerFactory loggerFactory, string configBasePath)
+	{
+		_fileSystemService = fileSystemService;
+		_loggerFactory = loggerFactory;
+		_configBasePath = configBasePath;
+	}
 
-        // Read folder settings from configuration
-        string baseFolder = configuration["FolderSettings:BaseFolder"] 
-            ?? throw new InvalidOperationException("FolderSettings:BaseFolder not configured");
-        string inputSubfolder = configuration["FolderSettings:InputSubfolder"] ?? "Input";
-        string logsSubfolder = configuration["FolderSettings:LogsSubfolder"] ?? "Logs";
-        string archiveSubfolder = configuration["FolderSettings:ArchiveSubfolder"] ?? "Archive";
+	public void Initialize()
+	{
+		// Load configuration from appsettings.json
+		var configuration = new ConfigurationBuilder()
+			.SetBasePath(_configBasePath)
+			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+			.Build();
 
-        // Construct full paths
-        InputFolder = Path.Combine(baseFolder, inputSubfolder);
-        LogsFolder = Path.Combine(baseFolder, logsSubfolder);
-        ArchiveFolder = Path.Combine(baseFolder, archiveSubfolder);
+		// Read folder settings from configuration
+		string baseFolder = configuration["FolderSettings:BaseFolder"]
+			?? throw new InvalidOperationException("FolderSettings:BaseFolder not configured");
+		string inputSubfolder = configuration["FolderSettings:InputSubfolder"] ?? "Input";
+		string logsSubfolder = configuration["FolderSettings:LogsSubfolder"] ?? "Logs";
+		string archiveSubfolder = configuration["FolderSettings:ArchiveSubfolder"] ?? "Archive";
 
-        // Ensure all required directories exist
-        EnsureDirectoryExists(InputFolder, "Input");
-        EnsureDirectoryExists(LogsFolder, "Logs");
-        EnsureDirectoryExists(ArchiveFolder, "Archive");
+		// Construct full paths
+		InputFolder = Path.Combine(baseFolder, inputSubfolder);
+		LogsFolder = Path.Combine(baseFolder, logsSubfolder);
+		ArchiveFolder = Path.Combine(baseFolder, archiveSubfolder);
 
-        // Configure NLog to use the logs folder
-        _loggerFactory.ConfigureLogDirectory(LogsFolder);
+		// Ensure all required directories exist
+		EnsureDirectoryExists(InputFolder, "Input");
+		EnsureDirectoryExists(LogsFolder, "Logs");
+		EnsureDirectoryExists(ArchiveFolder, "Archive");
 
-        // Setup NLog
-        Logger = _loggerFactory.CreateLogger();
-        Logger.Info("Application started");
-        Logger.Debug("Configuration loaded successfully");
-        Logger.Info("Folder configuration: Base={BaseFolder}, Input={InputFolder}, Logs={LogsFolder}, Archive={ArchiveFolder}",
-                    baseFolder, InputFolder, LogsFolder, ArchiveFolder);
+		// Configure NLog to use the logs folder
+		_loggerFactory.ConfigureLogDirectory(LogsFolder);
 
-        // Read other settings from configuration
-        WorksheetName = configuration["ExcelSettings:WorksheetName"] 
-            ?? throw new InvalidOperationException("ExcelSettings:WorksheetName not configured");
-        ColumnName = configuration["ExcelSettings:ColumnName"] 
-            ?? throw new InvalidOperationException("ExcelSettings:ColumnName not configured");
-        CK_ReportingConnectionString = configuration.GetConnectionString("CK_Reporting") 
-            ?? throw new InvalidOperationException("ConnectionString 'CK_Reporting' not configured");
-        CommonConnectionString = configuration.GetConnectionString("Common") 
-            ?? throw new InvalidOperationException("ConnectionString 'Common' not configured");
-        AddHolidaySitesAndOrganizationsProc = configuration["StoredProcedures:AddHolidaySitesAndOrganizations"] 
-            ?? throw new InvalidOperationException("StoredProcedure 'AddHolidaySitesAndOrganizations' not configured");
-        AddSitesToSiteXRefProc = configuration["StoredProcedures:AddSitesToSiteXRef"] 
-            ?? throw new InvalidOperationException("StoredProcedure 'AddSitesToSiteXRef' not configured");
+		// Setup NLog
+		Logger = _loggerFactory.CreateLogger();
+		Logger.Info("Application started");
+		Logger.Debug("Configuration loaded successfully");
+		Logger.Info("Folder configuration: Base={BaseFolder}, Input={InputFolder}, Logs={LogsFolder}, Archive={ArchiveFolder}",
+					baseFolder, InputFolder, LogsFolder, ArchiveFolder);
 
-        Logger.Info("Configuration settings: Worksheet={Worksheet}, Column={Column}", WorksheetName, ColumnName);
-    }
+		// Read other settings from configuration
+		WorksheetName = configuration["ExcelSettings:WorksheetName"]
+			?? throw new InvalidOperationException("ExcelSettings:WorksheetName not configured");
+		ColumnName = configuration["ExcelSettings:ColumnName"]
+			?? throw new InvalidOperationException("ExcelSettings:ColumnName not configured");
+		CK_ReportingConnectionString = configuration.GetConnectionString("CK_Reporting")
+			?? throw new InvalidOperationException("ConnectionString 'CK_Reporting' not configured");
+		CommonConnectionString = configuration.GetConnectionString("Common")
+			?? throw new InvalidOperationException("ConnectionString 'Common' not configured");
+		AddHolidaySitesAndOrganizationsProc = configuration["StoredProcedures:AddHolidaySitesAndOrganizations"]
+			?? throw new InvalidOperationException("StoredProcedure 'AddHolidaySitesAndOrganizations' not configured");
+		AddSitesToSiteXRefProc = configuration["StoredProcedures:AddSitesToSiteXRef"]
+			?? throw new InvalidOperationException("StoredProcedure 'AddSitesToSiteXRef' not configured");
 
-    private void EnsureDirectoryExists(string path, string folderName)
-    {
-        if (!_fileSystemService.DirectoryExists(path))
-        {
-            Console.WriteLine($"Creating {folderName} folder: {path}");
-            _fileSystemService.CreateDirectory(path);
-            Console.WriteLine($"{folderName} folder created successfully");
-        }
-        else
-        {
-            Console.WriteLine($"{folderName} folder exists: {path}");
-        }
-    }
+		Logger.Info("Configuration settings: Worksheet={Worksheet}, Column={Column}", WorksheetName, ColumnName);
+
+		// Create configuration objects
+		ExcelReaderConfig = new ExcelReaderConfiguration
+		{
+			InputFolder = InputFolder,
+			WorksheetName = WorksheetName,
+			ColumnName = ColumnName
+		};
+
+		ArchiveConfig = new ArchiveConfiguration
+		{
+			ArchiveFolder = ArchiveFolder,
+			LogsFolder = LogsFolder
+		};
+
+		ApplicationConfig = new ApplicationConfiguration
+		{
+			CK_ReportingConnectionString = CK_ReportingConnectionString,
+			CommonConnectionString = CommonConnectionString,
+			AddHolidaySitesProc = AddHolidaySitesAndOrganizationsProc,
+			AddSitesToSiteXRefProc = AddSitesToSiteXRefProc,
+			ExcelReaderConfig = ExcelReaderConfig,
+			ArchiveConfig = ArchiveConfig
+		};
+	}
+
+	private void EnsureDirectoryExists(string path, string folderName)
+	{
+		if (!_fileSystemService.DirectoryExists(path))
+		{
+			Console.WriteLine($"Creating {folderName} folder: {path}");
+			_fileSystemService.CreateDirectory(path);
+			Console.WriteLine($"{folderName} folder created successfully");
+		}
+		else
+		{
+			Console.WriteLine($"{folderName} folder exists: {path}");
+		}
+	}
 }

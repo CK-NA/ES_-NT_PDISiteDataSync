@@ -1,5 +1,3 @@
-using NLog;
-
 namespace PDI_SiteDataSync.Utility;
 
 /// <summary>
@@ -7,8 +5,8 @@ namespace PDI_SiteDataSync.Utility;
 /// </summary>
 public interface ILoggerFactory
 {
-    void ConfigureLogDirectory(string logDirectory);
-    Logger CreateLogger();
-    void FlushLogs();
-    void ShutdownLogs();
+	void ConfigureLogDirectory(string logDirectory);
+	Logger CreateLogger();
+	void FlushLogs();
+	void ShutdownLogs();
 }

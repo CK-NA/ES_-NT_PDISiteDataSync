@@ -1,8 +1,3 @@
-using FluentAssertions;
-using Moq;
-using NLog;
-using Xunit;
-
 namespace PDI_SiteDataSync.Tests;
 
 // NOTE: LogHelperTests have been disabled because Console.SetOut() in xUnit
