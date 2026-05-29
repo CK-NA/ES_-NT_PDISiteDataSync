@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>1.0.0</PackageVersion>
+    <PackageId>CK_NA.Templates.ConsoleETL</PackageId>
+    <Title>CK-NA Console ETL Application Template</Title>
+    <Authors>CK-NA</Authors>
+    <Description>A dotnet new template for creating CK-NA console ETL applications with standardized bootstrap, logging, archiving, and optional Excel/database scaffolding.</Description>
+    <PackageTags>dotnet-new;templates;console;etl;ck-na</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/CK-NA/ES_-NT_PDISiteDataSync</RepositoryUrl>
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>

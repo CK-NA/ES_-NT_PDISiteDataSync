@@ -8,8 +8,8 @@ public class ApplicationProcessTests : IDisposable
 	private readonly Logger _logger;
 	private readonly Mock<IExcelDataReader> _mockExcelReader;
 	private readonly Mock<IArchiveManager> _mockArchiveManager;
-	private readonly Mock<IDatabaseService> _mockCkReportingService;
-	private readonly Mock<IDatabaseService> _mockCommonService;
+	private readonly Mock<ISiteDataDatabaseService> _mockCkReportingService;
+	private readonly Mock<ISiteDataDatabaseService> _mockCommonService;
 	private readonly string _testFolder;
 
 	public ApplicationProcessTests()
@@ -22,8 +22,8 @@ public class ApplicationProcessTests : IDisposable
 
 		_mockExcelReader = new Mock<IExcelDataReader>();
 		_mockArchiveManager = new Mock<IArchiveManager>();
-		_mockCkReportingService = new Mock<IDatabaseService>();
-		_mockCommonService = new Mock<IDatabaseService>();
+		_mockCkReportingService = new Mock<ISiteDataDatabaseService>();
+		_mockCommonService = new Mock<ISiteDataDatabaseService>();
 
 		_testFolder = Path.Combine(Path.GetTempPath(), "PDI_App_Test_" + Guid.NewGuid().ToString());
 		Directory.CreateDirectory(_testFolder);

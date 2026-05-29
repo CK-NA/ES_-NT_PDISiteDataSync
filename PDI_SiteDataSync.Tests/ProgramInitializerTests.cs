@@ -7,7 +7,7 @@ public class ProgramInitializerTests : IDisposable
 	private readonly string _testConfigFolder;
 	private readonly string _testConfigFile;
 	private readonly Mock<IFileSystemService> _mockFileSystem;
-	private readonly Mock<ILoggerFactory> _mockLoggerFactory;
+	private readonly Mock<IAppLoggerFactory> _mockLoggerFactory;
 	private readonly Logger _logger;
 
 	public ProgramInitializerTests()
@@ -17,11 +17,12 @@ public class ProgramInitializerTests : IDisposable
 		_testConfigFile = Path.Combine(_testConfigFolder, "appsettings.json");
 
 		_mockFileSystem = new Mock<IFileSystemService>();
-		_mockLoggerFactory = new Mock<ILoggerFactory>();
+		_mockLoggerFactory = new Mock<IAppLoggerFactory>();
 		_logger = TestLoggerFactory.CreateTestLogger();
 
-		// Setup default mock behaviors
-		_mockFileSystem.Setup(x => x.DirectoryExists(It.IsAny<string>())).Returns(false);
+		// Setup default mock behaviors - base folder exists, subfolders do not
+		_mockFileSystem.Setup(x => x.DirectoryExists(_testConfigFolder)).Returns(true);
+		_mockFileSystem.Setup(x => x.DirectoryExists(It.Is<string>(p => p != _testConfigFolder))).Returns(false);
 		_mockLoggerFactory.Setup(x => x.CreateLogger()).Returns(_logger);
 	}
 

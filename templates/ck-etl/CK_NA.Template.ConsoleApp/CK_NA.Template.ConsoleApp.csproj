@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CK_NA.ConsoleApp.Core" Version="0.0.1" />
+    <PackageReference Include="CK_NA.ConsoleApp.Core" Version="corePackageVersion" />
+<!--#if (includeExcel) -->
     <PackageReference Include="EPPlus" Version="8.6.0" />
+<!--#endif -->
   </ItemGroup>
 
   <ItemGroup>

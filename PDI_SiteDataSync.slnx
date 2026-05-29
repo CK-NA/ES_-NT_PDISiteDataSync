@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="CK.ConsoleApp.Core/CK_NA.ConsoleApp.Core.csproj" />
   <Project Path="PDI_SiteDataSync.Tests/PDI_SiteDataSync.Tests.csproj" />
   <Project Path="PDI_SiteDataSync/PDI_SiteDataSync.csproj" />
 </Solution>

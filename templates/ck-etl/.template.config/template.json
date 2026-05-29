@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "CK-NA",
+  "classifications": ["Console", "ETL", "CK-NA"],
+  "identity": "CK_NA.ConsoleApp.ETL",
+  "name": "CK-NA Console ETL Application",
+  "shortName": "ck-etl",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "CK_NA.Template.ConsoleApp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "includeExcel": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Include EPPlus Excel data reader scaffolding"
+    },
+    "includeDatabase": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Include SQL Server database service scaffolding"
+    },
+    "corePackageVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "0.0.1",
+      "description": "Version of the CK_NA.ConsoleApp.Core NuGet package to reference"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!includeExcel)",
+          "exclude": [
+            "CK_NA.Template.ConsoleApp/Utility/ExcelDataReader.cs",
+            "CK_NA.Template.ConsoleApp/Utility/IExcelDataReader.cs",
+            "CK_NA.Template.ConsoleApp/Configuration/ExcelReaderConfiguration.cs"
+          ]
+        },
+        {
+          "condition": "(!includeDatabase)",
+          "exclude": [
+            "CK_NA.Template.ConsoleApp/Utility/IDatabaseService.cs",
+            "CK_NA.Template.ConsoleApp/Utility/DatabaseService.cs"
+          ]
+        }
+      ]
+    }
+  ]
+}

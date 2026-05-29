@@ -143,7 +143,7 @@ public class ExcelDataReaderTests : IDisposable
 
 	private void CreateTestExcelFile(string filePath, string worksheetName, string columnName, string[] values)
 	{
-		OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+		OfficeOpenXml.ExcelPackage.License.SetNonCommercialOrganization("CK-NA");
 
 		using var package = new OfficeOpenXml.ExcelPackage();
 		var worksheet = package.Workbook.Worksheets.Add(worksheetName);

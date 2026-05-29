@@ -23,6 +23,9 @@
     <Using Include="NLog" />
     <Using Include="FluentAssertions" />
     <Using Include="PDI_SiteDataSync.Utility" />
+    <Using Include="CK_NA.ConsoleApp.Core.IO" />
+    <Using Include="CK_NA.ConsoleApp.Core.Logging" />
+    <Using Include="CK_NA.ConsoleApp.Core.Configuration" />
   </ItemGroup>
 
   <ItemGroup>

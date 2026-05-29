@@ -11,8 +11,8 @@ public class ApplicationProcess
 	private readonly Logger _logger;
 	private readonly IExcelDataReader _excelReader;
 	private readonly IArchiveManager _archiveManager;
-	private readonly IDatabaseService _ckReportingService;
-	private readonly IDatabaseService _commonService;
+	private readonly ISiteDataDatabaseService _ckReportingService;
+	private readonly ISiteDataDatabaseService _commonService;
 	private readonly ApplicationConfiguration _configuration;
 
 	/// <summary>
@@ -22,9 +22,9 @@ public class ApplicationProcess
 		: this(
 			initializer.Logger,
 			new ExcelDataReader(initializer.Logger, initializer.ApplicationConfig.ExcelReaderConfig),
-			new ArchiveManager(initializer.Logger, new NLogLoggerFactory(), initializer.ApplicationConfig.ArchiveConfig),
-			new DatabaseService(initializer.Logger, initializer.ApplicationConfig.CK_ReportingConnectionString),
-			new DatabaseService(initializer.Logger, initializer.ApplicationConfig.CommonConnectionString),
+			new ArchiveManager(initializer.Logger, new NLogAppLoggerFactory(), initializer.ApplicationConfig.ArchiveConfig),
+			new SiteDataDatabaseService(initializer.Logger, initializer.ApplicationConfig.CK_ReportingConnectionString),
+			new SiteDataDatabaseService(initializer.Logger, initializer.ApplicationConfig.CommonConnectionString),
 			initializer.ApplicationConfig)
 	{
 	}
@@ -36,8 +36,8 @@ public class ApplicationProcess
 		Logger logger,
 		IExcelDataReader excelReader,
 		IArchiveManager archiveManager,
-		IDatabaseService ckReportingService,
-		IDatabaseService commonService,
+		ISiteDataDatabaseService ckReportingService,
+		ISiteDataDatabaseService commonService,
 		ApplicationConfiguration configuration)
 	{
 		_logger = logger;

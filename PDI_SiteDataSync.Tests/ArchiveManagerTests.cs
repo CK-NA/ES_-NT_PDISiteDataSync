@@ -1,19 +1,16 @@
-using PDI_SiteDataSync.Configuration;
-using PDI_SiteDataSync.Utility;
-
 namespace PDI_SiteDataSync.Tests;
 
 public class ArchiveManagerTests : IDisposable
 {
 	private readonly Logger _logger;
-	private readonly Mock<ILoggerFactory> _mockLoggerFactory;
+	private readonly Mock<IAppLoggerFactory> _mockLoggerFactory;
 	private readonly string _testArchiveFolder;
 	private readonly string _testLogsFolder;
 
 	public ArchiveManagerTests()
 	{
 		_logger = TestLoggerFactory.CreateTestLogger();
-		_mockLoggerFactory = new Mock<ILoggerFactory>();
+		_mockLoggerFactory = new Mock<IAppLoggerFactory>();
 		var testRoot = Path.Combine(Path.GetTempPath(), "PDI_Archive_Test_" + Guid.NewGuid().ToString());
 		_testArchiveFolder = Path.Combine(testRoot, "Archive");
 		_testLogsFolder = Path.Combine(testRoot, "Logs");

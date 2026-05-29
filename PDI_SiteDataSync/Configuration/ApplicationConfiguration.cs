@@ -10,5 +10,5 @@ public class ApplicationConfiguration
 	public required string AddHolidaySitesProc { get; init; }
 	public required string AddSitesToSiteXRefProc { get; init; }
 	public required ExcelReaderConfiguration ExcelReaderConfig { get; init; }
-	public required ArchiveConfiguration ArchiveConfig { get; init; }
+	public required CK_NA.ConsoleApp.Core.Configuration.ArchiveConfiguration ArchiveConfig { get; init; }
 }
